@@ -146,8 +146,26 @@ body {
     .todo__tag {
       border: 1px solid #111827;
       border-radius: 0.5rem;
-      padding: 0.1rem 0.2rem;
+      padding: 0.1rem 0.4rem;
       font-size: 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+
+      .todo__tag__delete {
+        font-size: inherit;
+
+        button {
+          padding: 0.1rem;
+          margin: 0;
+          background: none;
+          font-size: inherit;
+          border: none;
+          cursor: pointer;
+
+          &:hover{color:red;}
+        }
+      }
     }
   }
 }

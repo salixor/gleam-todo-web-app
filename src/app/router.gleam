@@ -32,6 +32,10 @@ pub fn handle_request(req: Request, ctx: Context) -> Response {
       use <- wisp.require_method(req, http.Patch)
       item_routes.patch_toggle_todo(req, ctx, id)
     }
+    ["items", id, "tags", tag] -> {
+      use <- wisp.require_method(req, http.Delete)
+      item_routes.delete_tag_from_item(req, ctx, id, tag)
+    }
 
     ["internal-server-error"] -> wisp.internal_server_error()
     ["unprocessable-entity"] -> wisp.unprocessable_entity()

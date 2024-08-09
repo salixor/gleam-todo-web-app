@@ -1,3 +1,4 @@
+import gleam/list
 import gleam/option.{type Option}
 import wisp
 
@@ -31,6 +32,10 @@ pub fn create_item(
     True -> Item(id, title, description, status: Completed, tags: tags)
     False -> Item(id, title, description, status: Uncompleted, tags: tags)
   }
+}
+
+pub fn remove_tag_from_item(item: Item, tag: Tag) {
+  Item(..item, tags: item.tags |> list.filter(fn(t) { t != tag }))
 }
 
 pub fn toggle_todo(item: Item) -> Item {

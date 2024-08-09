@@ -71,6 +71,37 @@ pub fn delete_item(req: Request, ctx: Context, item_id: String) {
   |> wisp.set_cookie(req, "items", json_items, wisp.PlainText, 60 * 60 * 24)
 }
 
+pub fn delete_tag_from_item(
+  req: Request,
+  ctx: Context,
+  item_id: String,
+  tag_to_delete: Tag,
+) {
+  let current_items = ctx.items
+
+  let result = {
+    use _ <- result.try(
+      list.find(current_items, fn(item) { item.id == item_id }),
+    )
+    current_items
+    |> list.map(fn(item) {
+      case item.id == item_id {
+        True -> item.remove_tag_from_item(item, tag_to_delete)
+        False -> item
+      }
+    })
+    |> todos_to_json
+    |> Ok
+  }
+
+  case result {
+    Ok(json_items) ->
+      wisp.redirect("/")
+      |> wisp.set_cookie(req, "items", json_items, wisp.PlainText, 60 * 60 * 24)
+    Error(_) -> wisp.bad_request()
+  }
+}
+
 pub fn patch_toggle_todo(req: Request, ctx: Context, item_id: String) {
   let current_items = ctx.items
 

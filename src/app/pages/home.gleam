@@ -1,4 +1,4 @@
-import app/models/item.{type Item, Completed, Uncompleted}
+import app/models/item.{type Item, type Tag, Completed, Uncompleted}
 import gleam/list
 import lustre/attribute.{autofocus, class, name, placeholder}
 import lustre/element.{type Element, text}
@@ -58,6 +58,22 @@ fn todos_input() -> Element(t) {
   )
 }
 
+fn tag(item: Item, tag: Tag) -> Element(t) {
+  span([class("todo__tag")], [
+    span([], [text("#" <> tag)]),
+    form(
+      [
+        attribute.method("POST"),
+        attribute.action(
+          "/items/" <> item.id <> "/tags/" <> tag <> "?_method=DELETE",
+        ),
+        class("todo__tag__delete"),
+      ],
+      [button([], [text("x")])],
+    ),
+  ])
+}
+
 fn item(item: Item) -> Element(t) {
   let completed_class: String = {
     case item.status {
@@ -80,9 +96,7 @@ fn item(item: Item) -> Element(t) {
         div(
           [class("todo__tags")],
           item.tags
-            |> list.map(fn(tag) {
-              span([class("todo__tag")], [text("#" <> tag)])
-            }),
+            |> list.map(tag(item, _)),
         ),
       ]),
     ]),
