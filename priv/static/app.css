@@ -137,6 +137,19 @@ body {
   .todo__description {
     font-size: 0.75rem;
   }
+
+  .todo__tags {
+    margin-top: 0.1rem;
+    display: flex;
+    gap: 0.2rem;
+
+    .todo__tag {
+      border: 1px solid #111827;
+      border-radius: 0.5rem;
+      padding: 0.1rem 0.2rem;
+      font-size: 0.65rem;
+    }
+  }
 }
 
 .todo--completed {

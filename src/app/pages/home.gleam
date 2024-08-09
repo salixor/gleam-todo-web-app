@@ -48,6 +48,12 @@ fn todos_input() -> Element(t) {
         ],
         "",
       ),
+      input([
+        name("todo_tags"),
+        class("add-todo-input__tags"),
+        placeholder("Any tags?"),
+      ]),
+      button([class("todo_create"), attribute.type_("submit")], [text("Create")]),
     ],
   )
 }
@@ -71,6 +77,13 @@ fn item(item: Item) -> Element(t) {
       div([class("todo__informations")], [
         span([class("todo__title")], [text(item.title)]),
         span([class("todo__description")], [text(item.description)]),
+        div(
+          [class("todo__tags")],
+          item.tags
+            |> list.map(fn(tag) {
+              span([class("todo__tag")], [text("#" <> tag)])
+            }),
+        ),
       ]),
     ]),
     form(

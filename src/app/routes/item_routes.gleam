@@ -1,6 +1,8 @@
 import app/models/item.{type Item, create_item}
 import app/web.{type Context, Context}
 import gleam/dynamic
+import gleam/int
+import gleam/io
 import gleam/json
 import gleam/list
 import gleam/option.{None, Some}
@@ -8,8 +10,24 @@ import gleam/result
 import gleam/string
 import wisp.{type Request, type Response}
 
+type Tag =
+  String
+
 type ItemsJson {
-  ItemsJson(id: String, title: String, description: String, completed: Bool)
+  ItemsJson(
+    id: String,
+    title: String,
+    description: String,
+    completed: Bool,
+    tags: List(Tag),
+  )
+}
+
+fn tags_string_to_list(tags: String) -> List(Tag) {
+  case tags |> string.trim {
+    "" -> []
+    tags -> tags |> string.split(" ") |> list.unique()
+  }
 }
 
 pub fn post_create_item(req: Request, ctx: Context) {
@@ -21,7 +39,11 @@ pub fn post_create_item(req: Request, ctx: Context) {
     use item_title <- result.try(list.key_find(form.values, "todo_title"))
     let item_description =
       result.unwrap(list.key_find(form.values, "todo_description"), "")
-    let new_item = create_item(None, item_title, item_description, False)
+    let item_tags =
+      result.unwrap(list.key_find(form.values, "todo_tags"), "")
+      |> tags_string_to_list
+    let new_item =
+      create_item(None, item_title, item_description, False, item_tags)
     list.append(current_items, [new_item])
     |> todos_to_json
     |> Ok
@@ -83,12 +105,13 @@ pub fn items_middleware(
     case wisp.get_cookie(req, "items", wisp.PlainText) {
       Ok(json_string) -> {
         let decoder =
-          dynamic.decode4(
+          dynamic.decode5(
             ItemsJson,
             dynamic.field("id", dynamic.string),
             dynamic.field("title", dynamic.string),
             dynamic.field("description", dynamic.string),
             dynamic.field("completed", dynamic.bool),
+            dynamic.field("tags", dynamic.list(dynamic.string)),
           )
           |> dynamic.list
 
@@ -112,8 +135,8 @@ pub fn items_middleware(
 fn create_items_from_json(items: List(ItemsJson)) -> List(Item) {
   items
   |> list.map(fn(item) {
-    let ItemsJson(id, title, description, completed) = item
-    create_item(Some(id), title, description, completed)
+    let ItemsJson(id, title, description, completed, tags) = item
+    create_item(Some(id), title, description, completed, tags)
   })
 }
 
@@ -131,6 +154,7 @@ fn item_to_json(item: Item) -> String {
     #("title", json.string(item.title)),
     #("description", json.string(item.description)),
     #("completed", json.bool(item.item_status_to_bool(item.status))),
+    #("tags", json.array(item.tags, json.string)),
   ])
   |> json.to_string
 }
