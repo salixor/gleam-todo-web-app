@@ -2,7 +2,8 @@
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   padding: 0;
   margin: 0;
 }
@@ -49,21 +50,32 @@ body {
 
 .add-todo-input {
   display: flex;
-  width: 100%; 
+  flex-direction: column;
+  width: 100%;
+
+  >:focus {
+    background: white;
+  }
 }
 
 .add-todo-input__input {
   width: 100%;
   border: none;
-  color: #111827; 
-  background-color: #F3F4F6cc; 
+  color: #111827;
+  background-color: #F3F4F6cc;
   padding: 0.625rem 1.25rem;
-  border-radius: 0.2rem; 
-  outline-style: none; 
+  border-radius: 0.2rem;
+  outline-style: none;
 }
 
-.add-todo-input__input:focus {
-  background: white;
+.add-todo-input__description {
+  width: 100%;
+  border: none;
+  color: #111827;
+  background-color: #F3F4F6cc;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.2rem;
+  outline-style: none;
 }
 
 .todos__list {
@@ -113,13 +125,27 @@ body {
   background-color: #3B82F6;
 }
 
-.todo__title {
-  margin-left: 10px;
+.todo__informations {
+  display: flex;
+  flex-direction: column;
+  margin-left: 20px;
+
+  .todo__title {
+    font-weight: bold;
+  }
+
+  .todo__description {
+    font-size: 0.75rem;
+  }
 }
 
-.todo--completed .todo__title {
-  color: #6B7280;
-  text-decoration: line-through;
+.todo--completed {
+
+  .todo__title,
+  .todo__description {
+    color: #6B7280;
+    text-decoration: line-through;
+  }
 }
 
 .todo__delete {

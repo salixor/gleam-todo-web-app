@@ -2,7 +2,7 @@ import app/models/item.{type Item, Completed, Uncompleted}
 import gleam/list
 import lustre/attribute.{autofocus, class, name, placeholder}
 import lustre/element.{type Element, text}
-import lustre/element/html.{button, div, form, h1, input, span, svg}
+import lustre/element/html.{button, div, form, h1, input, span, svg, textarea}
 import lustre/element/svg
 
 pub fn root(items: List(Item)) -> Element(t) {
@@ -40,6 +40,14 @@ fn todos_input() -> Element(t) {
         placeholder("What needs to be done?"),
         autofocus(True),
       ]),
+      textarea(
+        [
+          name("todo_description"),
+          class("add-todo-input__description"),
+          placeholder("Any description?"),
+        ],
+        "",
+      ),
     ],
   )
 }
@@ -60,7 +68,10 @@ fn item(item: Item) -> Element(t) {
         ],
         [button([class("todo__button")], [svg_icon_checked()])],
       ),
-      span([class("todo__title")], [text(item.title)]),
+      div([class("todo__informations")], [
+        span([class("todo__title")], [text(item.title)]),
+        span([class("todo__description")], [text(item.description)]),
+      ]),
     ]),
     form(
       [

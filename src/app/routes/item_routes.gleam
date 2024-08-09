@@ -9,7 +9,7 @@ import gleam/string
 import wisp.{type Request, type Response}
 
 type ItemsJson {
-  ItemsJson(id: String, title: String, completed: Bool)
+  ItemsJson(id: String, title: String, description: String, completed: Bool)
 }
 
 pub fn post_create_item(req: Request, ctx: Context) {
@@ -19,7 +19,9 @@ pub fn post_create_item(req: Request, ctx: Context) {
 
   let result = {
     use item_title <- result.try(list.key_find(form.values, "todo_title"))
-    let new_item = create_item(None, item_title, False)
+    let item_description =
+      result.unwrap(list.key_find(form.values, "todo_description"), "")
+    let new_item = create_item(None, item_title, item_description, False)
     list.append(current_items, [new_item])
     |> todos_to_json
     |> Ok
@@ -81,10 +83,11 @@ pub fn items_middleware(
     case wisp.get_cookie(req, "items", wisp.PlainText) {
       Ok(json_string) -> {
         let decoder =
-          dynamic.decode3(
+          dynamic.decode4(
             ItemsJson,
             dynamic.field("id", dynamic.string),
             dynamic.field("title", dynamic.string),
+            dynamic.field("description", dynamic.string),
             dynamic.field("completed", dynamic.bool),
           )
           |> dynamic.list
@@ -109,8 +112,8 @@ pub fn items_middleware(
 fn create_items_from_json(items: List(ItemsJson)) -> List(Item) {
   items
   |> list.map(fn(item) {
-    let ItemsJson(id, title, completed) = item
-    create_item(Some(id), title, completed)
+    let ItemsJson(id, title, description, completed) = item
+    create_item(Some(id), title, description, completed)
   })
 }
 
@@ -126,6 +129,7 @@ fn item_to_json(item: Item) -> String {
   json.object([
     #("id", json.string(item.id)),
     #("title", json.string(item.title)),
+    #("description", json.string(item.description)),
     #("completed", json.bool(item.item_status_to_bool(item.status))),
   ])
   |> json.to_string

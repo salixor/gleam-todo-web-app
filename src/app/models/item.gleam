@@ -7,14 +7,19 @@ pub type ItemStatus {
 }
 
 pub type Item {
-  Item(id: String, title: String, status: ItemStatus)
+  Item(id: String, title: String, description: String, status: ItemStatus)
 }
 
-pub fn create_item(id: Option(String), title: String, completed: Bool) -> Item {
+pub fn create_item(
+  id: Option(String),
+  title: String,
+  description: String,
+  completed: Bool,
+) -> Item {
   let id = option.unwrap(id, wisp.random_string(64))
   case completed {
-    True -> Item(id, title, status: Completed)
-    False -> Item(id, title, status: Uncompleted)
+    True -> Item(id, title, description, status: Completed)
+    False -> Item(id, title, description, status: Uncompleted)
   }
 }
 
